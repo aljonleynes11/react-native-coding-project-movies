@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  SafeAreaView, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
   StatusBar,
   RefreshControl
 } from 'react-native';
-import CategoryMovieList from '../components/CategoryMovieList';
-import { useLandingPageStore } from '../stores/landingPageStore';
+
+import MovieList from '../components/MovieList';
+import { useLandingScreenStore } from '../stores/landingScreenStore';
+import { Movie } from '../models/Movie';
 
 const LandingScreen = () => {
-
   const {
     categories,
     isLoading,
@@ -20,14 +21,12 @@ const LandingScreen = () => {
     initializeCategories,
     fetchAllCategoryMovies,
     refreshAllMovies
-  } = useLandingPageStore();
-
+  } = useLandingScreenStore();
 
   useEffect(() => {
     initializeCategories();
     fetchAllCategoryMovies();
   }, [initializeCategories, fetchAllCategoryMovies]);
-
 
   const handleRefresh = async () => {
     await refreshAllMovies();
@@ -39,14 +38,13 @@ const LandingScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerText}>TMDB Movies</Text>
       </View>
-      
-      
+
       {error && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
-      
+
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -60,10 +58,13 @@ const LandingScreen = () => {
         }
       >
         {categories.map((category, index) => (
-          <CategoryMovieList
+          <MovieList
             key={`${category.header}-${index}`}
-            categoryTitle={category.header}
+            title={category.header}
             endpoint={category.endpoint}
+            onMoviePress={(movie:Movie)=>{
+              console.log('Movie pressed:', movie.title);
+            }}
           />
         ))}
       </ScrollView>
