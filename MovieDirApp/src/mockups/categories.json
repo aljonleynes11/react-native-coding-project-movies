@@ -1,0 +1,32 @@
+{
+    "categories": [
+        {
+            "header": "Popular Movies",
+            "endpoint": "/movie/popular"
+        },
+        {
+            "header": "Top Rated Movies",
+            "endpoint": "/movie/top_rated"
+        },
+        {
+            "header": "Upcoming Movies",
+            "endpoint": "/movie/upcoming"
+        },
+        {
+            "header": "Now Playing Movies",
+            "endpoint": "/movie/now_playing"
+        },
+        {
+            "header": "Trending Movies",
+            "endpoint": "/trending/movie/day"
+        },
+        {
+            "header": "Horror Movies",
+            "endpoint": "/discover/movie?with_genres=27"
+        },
+        {
+            "header": "Action Movies",
+            "endpoint": "/discover/movie?with_genres=28"
+        }
+    ]
+}
