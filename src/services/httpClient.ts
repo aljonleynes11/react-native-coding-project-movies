@@ -2,7 +2,6 @@ import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
 import { MovieResponse } from '../models/Movie';
 
-
 const httpClient = axios.create({
   timeout: 10000,
   headers: {
@@ -10,7 +9,7 @@ const httpClient = axios.create({
   },
 });
 
-export const BASE_URL = 'https://api.themoviedb.org/3';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 httpClient.interceptors.request.use((config) => {
 

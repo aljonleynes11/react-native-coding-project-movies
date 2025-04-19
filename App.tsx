@@ -1,8 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import LandingPage from './src/screens/LandingScreen';
+import { registerRootComponent } from 'expo';
+import { ExpoRoot } from 'expo-router';
 
-export default function App() {
-  return  <LandingPage />
+// Must be exported for dynamic routes to work
+export function App() {
+  return <ExpoRoot context={require.context('./src/app')} />;
 }
+
+registerRootComponent(App);
 

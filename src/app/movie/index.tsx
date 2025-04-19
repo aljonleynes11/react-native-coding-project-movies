@@ -8,12 +8,14 @@ import {
   StatusBar,
   RefreshControl
 } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import MovieList from '../components/MovieList';
-import { useLandingScreenStore } from '../stores/landingScreenStore';
-import { Movie } from '../models/Movie';
+import MovieList from '../../components/MovieList';
+import { useLandingScreenStore } from '../../stores/landingScreenStore';
+import { Movie } from '../../models/Movie';
 
-const LandingScreen = () => {
+export default function MovieIndex() {
+  const router = useRouter();
   const {
     categories,
     isLoading,
@@ -32,11 +34,21 @@ const LandingScreen = () => {
     await refreshAllMovies();
   };
 
+  const handleMoviePress = (movie: Movie) => {
+    // Navigate to movie details screen using the movie ID
+    router.push({
+      pathname: `/movie/${movie.id}`,
+      params: { 
+        movieData: JSON.stringify(movie.id) 
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#032541" barStyle="light-content" />
       <View style={styles.header}>
-        <Text style={styles.headerText}>TMDB Movies</Text>
+        <Text style={styles.headerText}>All Movies</Text>
       </View>
 
       {error && (
@@ -57,20 +69,18 @@ const LandingScreen = () => {
           />
         }
       >
-        {categories.map((category, index) => (
+        {categories.map((category: any, index: number) => (
           <MovieList
             key={`${category.header}-${index}`}
             title={category.header}
             endpoint={category.endpoint}
-            onMoviePress={(movie:Movie)=>{
-              console.log('Movie pressed:', movie.title);
-            }}
+            onMoviePress={handleMoviePress}
           />
         ))}
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -102,5 +112,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default LandingScreen;

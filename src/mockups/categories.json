@@ -27,6 +27,18 @@
         {
             "header": "Action Movies",
             "endpoint": "/discover/movie?with_genres=28"
+        },
+        {
+            "header": "Comedy Movies",
+            "endpoint": "/discover/movie?with_genres=35"
+        },
+        {
+            "header": "Adventure Movies",
+            "endpoint": "/discover/movie?with_genres=12"
+        },
+        {
+            "header": "Animation Movies",
+            "endpoint": "/discover/movie?with_genres=16"
         }
     ]
 }
