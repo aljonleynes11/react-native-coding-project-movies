@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
-import { MovieResponse } from '../models/Movie';
+import { MovieResponse, Movie } from '../models/Movie';
 
 const httpClient = axios.create({
   timeout: 10000,
@@ -59,5 +59,36 @@ export const getMoviesByEndpoint = async (endpoint: string, page = 1): Promise<M
   
   return response.data;
 };
+
+
+export const fetchMovieById = async (movieId: string): Promise<Movie> => {
+  try {
+    const response = await httpClient.get(`/movie/${movieId}`, {
+      params: {
+        language: 'en-US'
+      }
+    });
+    
+    const data = response.data;
+
+    const movie: Movie = {
+      id: data.id,
+      title: data.title,
+      overview: data.overview,
+      poster_path: data.poster_path,
+      backdrop_path: data.backdrop_path,
+      release_date: data.release_date,
+      vote_average: data.vote_average,
+      vote_count: data.vote_count,
+      genre_ids: data.genres ? data.genres.map((genre: any) => genre.id) : [],
+    };
+    
+    return movie;
+  } catch (error) {
+    console.error('Error fetching movie details:', error);
+    throw error;
+  }
+};
+
 
 export default httpClient;

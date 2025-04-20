@@ -1,39 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, Image, ScrollView, SafeAreaView, StatusBar } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { Movie } from '../../models/Movie';
+import { useMovieStore } from '../../stores/movieStore';
+import MovieList from '../../components/MovieList';
+import { formatDate } from '../../utils/utils';
+import { Ionicons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
+import { TMDB_API_KEY } from '@env';
 
 export default function MovieShow() {
-  const { id, movieData } = useLocalSearchParams<{ id: string, movieData: string }>();
-  const [movie, setMovie] = useState<Movie | null>(null);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
+  const [isTrailerVisible, setTrailerVisible] = useState(false);
+  
+  const selectedMovie = useMovieStore(state => state.selectedMovie);
+  const setSelectedMovie = useMovieStore(state => state.setSelectedMovie);
+  const clearSelectedMovie = useMovieStore(state => state.clearSelectedMovie);
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Unknown';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    try {
-      // Try to parse the movie data from the params
-      if (movieData) {
-        const parsedMovie = JSON.parse(movieData) as Movie;
-        setMovie(parsedMovie);
-        setLoading(false);
-      } else {
-        // If no movieData is provided, we could fetch it from the API using the ID
-        // This would be implemented in a real app
-        setError("No movie data provided");
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("Error loading movie data");
+    if (selectedMovie) {
       setLoading(false);
-      console.error("Error parsing movie data:", err);
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
     }
-  }, [id, movieData]);
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    const fetchTrailer = async () => {
+      try {
+        const res = await fetch(
+          `https://api.themoviedb.org/3/movie/${selectedMovie?.id}/videos?api_key=${TMDB_API_KEY}`
+        );
+        const data = await res.json();
+        const youtubeTrailer = data.results.find(
+          (vid: any) => vid.site === 'YouTube' && vid.type === 'Trailer'
+        );
+        if (youtubeTrailer) {
+          setTrailerUrl(`https://www.youtube.com/embed/${youtubeTrailer.key}`);
+        }
+      } catch (err) {
+        console.error('Failed to fetch trailer:', err);
+      }
+    };
+
+    if (selectedMovie) {
+      fetchTrailer();
+    }
+  }, [selectedMovie]);
+
+  const handleMoviePress = (selectedMovie: Movie) => {
+    setSelectedMovie(selectedMovie);
+    router.push(`/movie/${selectedMovie.id}`);
+  };
+
+  const handleBackButtonPress = () => {
+    clearSelectedMovie();
+    router.back();
+  };
 
   if (loading) {
     return (
@@ -43,51 +81,99 @@ export default function MovieShow() {
     );
   }
 
-  if (error || !movie) {
+  if (error || !selectedMovie) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || "Movie not found"}</Text>
+        <Text style={styles.errorText}>{error || 'Movie not found'}</Text>
       </View>
     );
   }
 
-  // Movie details view - integrated from MovieViewScreen
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#032541" barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {movie.backdrop_path && (
-          <Image 
-            source={{ uri: `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` }}
-            style={styles.backdropImage}
-            resizeMode="cover"
-          />
-        )}
-        
+
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.backdropContainer}>
+          {selectedMovie.backdrop_path && (
+            <Image
+              source={{ uri: `https://image.tmdb.org/t/p/w780${selectedMovie.backdrop_path}` }}
+              style={styles.backdropImage}
+              resizeMode="cover"
+            />
+          )}
+
+          {trailerUrl && (
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={() => setTrailerVisible(true)}
+            >
+              <Ionicons name="play-circle-outline" size={64} color="white" />
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.backButton} onPress={handleBackButtonPress}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.headerContainer}>
-          {movie.poster_path && (
-            <Image 
-              source={{ uri: `https://image.tmdb.org/t/p/w342${movie.poster_path}` }}
+          {selectedMovie.poster_path && (
+            <Image
+              source={{ uri: `https://image.tmdb.org/t/p/w342${selectedMovie.poster_path}` }}
               style={styles.posterImage}
               resizeMode="cover"
             />
           )}
-          
+
           <View style={styles.headerInfo}>
-            <Text style={styles.title}>{movie.title}</Text>
-            <Text style={styles.releaseDate}>Released: {formatDate(movie.release_date)}</Text>
+            <Text style={styles.title}>{selectedMovie.title}</Text>
+            <Text style={styles.releaseDate}>Released: {formatDate(selectedMovie.release_date)}</Text>
             <View style={styles.ratingContainer}>
-              <Text style={styles.ratingText}>{movie.vote_average.toFixed(1)}</Text>
-              <Text style={styles.voteCount}>({movie.vote_count} votes)</Text>
+              <Text style={styles.ratingText}>{selectedMovie.vote_average.toFixed(1)}⭐</Text>
+              <Text style={styles.voteCount}>({selectedMovie.vote_count} votes)</Text>
             </View>
           </View>
         </View>
-        
+
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Overview</Text>
-          <Text style={styles.overview}>{movie.overview || 'No overview available.'}</Text>
+          <Text style={styles.overview}>{selectedMovie.overview || 'No overview available.'}</Text>
+        </View>
+
+        <View>
+          <MovieList
+            title="Similar Movies"
+            endpoint={`/movie/${selectedMovie?.id}/similar`}
+            onMoviePress={handleMoviePress}
+          />
+        </View>
+
+        <View style={styles.recommendedMoviesContainer}>
+          <MovieList
+            title="Recommended Movies"
+            endpoint={`/movie/${selectedMovie?.id}/recommendations`}
+            onMoviePress={handleMoviePress}
+          />
         </View>
       </ScrollView>
+
+      <Modal visible={isTrailerVisible} animationType="slide">
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+          <TouchableOpacity style={{ padding: 16 }} onPress={() => setTrailerVisible(false)}>
+            <Ionicons name="close" size={28} color="white" />
+          </TouchableOpacity>
+          <WebView
+            style={{ flex: 1 }}
+            javaScriptEnabled
+            domStorageEnabled
+            source={{ uri: trailerUrl! }}
+          />
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -101,9 +187,30 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingBottom: 20,
   },
+  backdropContainer: {
+    position: 'relative',
+    width: '100%',
+    height: '20%',
+  },
   backdropImage: {
     width: '100%',
-    height: 200,
+    height: '100%',
+  },
+  playButton: {
+    position: 'absolute',
+    top: '40%',
+    left: '42%',
+    zIndex: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 16,
+    zIndex: 10,
+    backgroundColor: '#032541',
+    borderRadius: 24,
+    padding: 8,
+    elevation: 5,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -159,6 +266,9 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#444',
   },
+  movieListContainer: {
+    paddingBottom: 16,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -177,4 +287,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-}); 
+  recommendedMoviesContainer: {
+    marginBottom: '80%',
+  },
+});

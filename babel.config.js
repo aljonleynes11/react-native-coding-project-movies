@@ -10,7 +10,8 @@ module.exports = function(api) {
         "whitelist": null,
         "safe": false,
         "allowUndefined": true
-      }]
+      }],
+      ['expo-router/babel', { appDir: './src/app' }],
     ]
   };
 }; 

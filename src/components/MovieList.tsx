@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { 
   View, 
   Text, 
@@ -9,6 +9,7 @@ import {
 import { useMovieListStore } from '../stores/movieListStore';
 import { Movie } from '../models/Movie';
 import MovieItem from './MovieItem';
+import { useShallow } from 'zustand/shallow';
 
 interface MovieListProps {
   title: string;
@@ -21,13 +22,15 @@ const MovieList: React.FC<MovieListProps> = ({
   endpoint,
   onMoviePress
 }) => {
+  const defaultMovieList = useMemo(() => ({
+    listId: title,
+    movies: [],
+    loading: true,
+    error: null
+  }), [title]);
+
   const { movies, loading, error } = useMovieListStore(
-    state => state.movieLists[title] || {
-      listId: title,
-      movies: [],
-      loading: true,
-      error: null
-    }
+    useShallow((state) => state.movieLists[title] || defaultMovieList)
   );
   
   const fetchMovieList = useMovieListStore(state => state.fetchMovieList);
@@ -75,7 +78,7 @@ const MovieList: React.FC<MovieListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginBottom: 16,
     paddingHorizontal: 0,
   },
   title: {
@@ -106,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MovieList; 
+export default MovieList;

@@ -2,8 +2,6 @@ import { create } from 'zustand';
 import { getMoviesByEndpoint } from '../services/httpClient';
 import { Movie } from '../models/Movie';
 
-
-
 interface MovieListState {
   movieLists: {
     [key: string]: {

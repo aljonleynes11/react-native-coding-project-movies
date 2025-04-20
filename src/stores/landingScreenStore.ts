@@ -10,10 +10,9 @@ interface LandingScreenState {
   isLoading: boolean;
   error: string | null;
   
-  // Actions
-  initializeCategories: () => void;
-  fetchMoviesForCategory: (category: Category) => Promise<void>;
-  fetchAllCategoryMovies: () => Promise<void>;
+  initCategories: () => void;
+  getMoviesForCategory: (category: Category) => Promise<void>;
+  getAllCategories: () => Promise<void>;
   refreshAllMovies: () => Promise<void>;
 }
 
@@ -25,7 +24,7 @@ export const useLandingScreenStore = create<LandingScreenState>((set, get) => ({
   error: null,
   
 
-  initializeCategories: () => {
+  initCategories: () => {
     set({ 
       categories: categoriesData.categories,
       isLoading: false,
@@ -34,7 +33,7 @@ export const useLandingScreenStore = create<LandingScreenState>((set, get) => ({
   },
   
 
-  fetchMoviesForCategory: async (category: Category) => {
+  getMoviesForCategory: async (category: Category) => {
     const categoryId = `${category.header}`;
     
     set((state) => ({
@@ -81,13 +80,13 @@ export const useLandingScreenStore = create<LandingScreenState>((set, get) => ({
   },
   
 
-  fetchAllCategoryMovies: async () => {
+  getAllCategories: async () => {
     const { categories } = get();
     set({ isLoading: true, error: null });
     
     try {
       const fetchPromises = categories.map(category => 
-        get().fetchMoviesForCategory(category)
+        get().getMoviesForCategory(category)
       );
       
       await Promise.all(fetchPromises);
@@ -109,6 +108,6 @@ export const useLandingScreenStore = create<LandingScreenState>((set, get) => ({
       error: null
     }));
     
-    await get().fetchAllCategoryMovies();
+    await get().getAllCategories();
   }
 })); 
