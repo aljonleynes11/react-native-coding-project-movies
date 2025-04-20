@@ -30,7 +30,7 @@ This app was developed as part of a coding challenge and was completed in approx
 
 ### Prerequisites
 
-- Node.js (v14 or later)
+- Node.js
 - npm or yarn
 - Expo CLI
 - Android Studio (for Android development) or Xcode (for iOS development)
