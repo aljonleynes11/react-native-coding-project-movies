@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useMovieStore } from '../stores/movieStore';
 import MovieList from '../components/MovieList';
-import { useLandingScreenStore } from '../stores/landingScreenStore';
+import { useMovieIndexStore } from '../stores/movieIndexStore';
 import { Movie } from '../models/Movie';
 import { btoa, atob } from 'react-native-quick-base64'
 import { useShallow } from 'zustand/shallow';
@@ -23,7 +23,7 @@ const MovieIndex = () => {
     categories,
     isLoading,
     error,
-  } = useLandingScreenStore(
+  } = useMovieIndexStore(
     useShallow((state) => ({
       categories: state.categories,
       isLoading: state.isLoading,
@@ -31,9 +31,9 @@ const MovieIndex = () => {
     }))
   );
 
-  const initCategories = useLandingScreenStore(state => state.initCategories);
-  const getAllCategories = useLandingScreenStore(state => state.getAllCategories);
-  const refreshAllMovies = useLandingScreenStore(state => state.refreshAllMovies);
+  const initCategories = useMovieIndexStore(state => state.initCategories);
+  const getAllCategories = useMovieIndexStore(state => state.getAllCategories);
+  const refreshAllMovies = useMovieIndexStore(state => state.refreshAllMovies);
 
   const setSelectedMovie = useMovieStore(state => state.setSelectedMovie);
   const getSelectedMovie = useMovieStore(state => state.getSelectedMovie);

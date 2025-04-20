@@ -4,7 +4,7 @@ import categoriesData from '../mockups/categories.json';
 import { Category } from '../models/Category';
 import { CategoryMovies } from '../models/CategoriesMovie';
 
-interface LandingScreenState {
+interface MovieIndexState {
   categories: Category[];
   categoryMovies: Record<string, CategoryMovies>;
   isLoading: boolean;
@@ -17,7 +17,7 @@ interface LandingScreenState {
 }
 
 
-export const useLandingScreenStore = create<LandingScreenState>((set, get) => ({
+export const useMovieIndexStore = create<MovieIndexState>((set, get) => ({
   categories: [],
   categoryMovies: {},
   isLoading: false,

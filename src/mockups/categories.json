@@ -39,6 +39,47 @@
         {
             "header": "Animation Movies",
             "endpoint": "/discover/movie?with_genres=16"
+        },
+        {
+            "header": "Documentary Movies",
+            "endpoint": "/discover/movie?with_genres=99"
+        },
+        {
+            "header": "Science Fiction Movies",
+            "endpoint": "/discover/movie?with_genres=878"
+        },
+        {
+            "header": "Mystery Movies",
+            "endpoint": "/discover/movie?with_genres=9648"
+        },
+        {
+            "header": "Romance Movies",
+            "endpoint": "/discover/movie?with_genres=10749"
+        },
+        {
+            "header": "Crime Movies",
+            "endpoint": "/discover/movie?with_genres=80"
+        },
+        {
+            "header": "Drama Movies",
+            "endpoint": "/discover/movie?with_genres=18"
+        },
+        {
+            "header": "Family Movies",
+            "endpoint": "/discover/movie?with_genres=10751"
+        },
+        {
+            "header": "Fantasy Movies",
+            "endpoint": "/discover/movie?with_genres=14"
+        },
+        {
+            "header": "History Movies",
+            "endpoint": "/discover/movie?with_genres=36"
+        },
+        {
+            "header": "War Movies",
+            "endpoint": "/discover/movie?with_genres=10752"
         }
+        
     ]
 }
