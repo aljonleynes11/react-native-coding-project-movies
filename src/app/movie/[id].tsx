@@ -15,12 +15,12 @@ import { useRouter } from 'expo-router';
 import { Movie } from '../../models/Movie';
 import { useMovieStore } from '../../stores/movieStore';
 import MovieList from '../../components/MovieList';
+import MovieBackdrop from '../../components/MovieBackdrop';
 import { formatDate } from '../../utils/utils';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
-import { TMDB_API_KEY } from '@env';
 
-export default function MovieShow() {
+const MovieShow = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,29 +40,6 @@ export default function MovieShow() {
     }
   }, [selectedMovie]);
 
-  useEffect(() => {
-    const fetchTrailer = async () => {
-      try {
-        const res = await fetch(
-          `https://api.themoviedb.org/3/movie/${selectedMovie?.id}/videos?api_key=${TMDB_API_KEY}`
-        );
-        const data = await res.json();
-        const youtubeTrailer = data.results.find(
-          (vid: any) => vid.site === 'YouTube' && vid.type === 'Trailer'
-        );
-        if (youtubeTrailer) {
-          setTrailerUrl(`https://www.youtube.com/embed/${youtubeTrailer.key}`);
-        }
-      } catch (err) {
-        console.error('Failed to fetch trailer:', err);
-      }
-    };
-
-    if (selectedMovie) {
-      fetchTrailer();
-    }
-  }, [selectedMovie]);
-
   const handleMoviePress = (selectedMovie: Movie) => {
     setSelectedMovie(selectedMovie);
     router.push(`/movie/${selectedMovie.id}`);
@@ -71,6 +48,11 @@ export default function MovieShow() {
   const handleBackButtonPress = () => {
     clearSelectedMovie();
     router.back();
+  };
+
+  const handlePlayPress = (url: string) => {
+    setTrailerUrl(url);
+    setTrailerVisible(true);
   };
 
   if (loading) {
@@ -97,28 +79,10 @@ export default function MovieShow() {
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.backdropContainer}>
-          {selectedMovie.backdrop_path && (
-            <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w780${selectedMovie.backdrop_path}` }}
-              style={styles.backdropImage}
-              resizeMode="cover"
-            />
-          )}
-
-          {trailerUrl && (
-            <TouchableOpacity
-              style={styles.playButton}
-              onPress={() => setTrailerVisible(true)}
-            >
-              <Ionicons name="play-circle-outline" size={64} color="white" />
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity style={styles.backButton} onPress={handleBackButtonPress}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
+        <MovieBackdrop
+          onBackPress={handleBackButtonPress}
+          onPlayPress={handlePlayPress}
+        />
 
         <View style={styles.headerContainer}>
           {selectedMovie.poster_path && (
@@ -178,6 +142,8 @@ export default function MovieShow() {
   );
 }
 
+export default MovieShow;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -186,31 +152,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 20,
-  },
-  backdropContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '20%',
-  },
-  backdropImage: {
-    width: '100%',
-    height: '100%',
-  },
-  playButton: {
-    position: 'absolute',
-    top: '40%',
-    left: '42%',
-    zIndex: 10,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 16,
-    zIndex: 10,
-    backgroundColor: '#032541',
-    borderRadius: 24,
-    padding: 8,
-    elevation: 5,
   },
   headerContainer: {
     flexDirection: 'row',

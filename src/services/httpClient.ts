@@ -90,5 +90,24 @@ export const fetchMovieById = async (movieId: string): Promise<Movie> => {
   }
 };
 
+export const fetchTrailer = async (movieId: number | string): Promise<string | null> => {
+  try {
+    const response = await httpClient.get(`/movie/${movieId}/videos`);
+    const data = response.data;
+    
+    const youtubeTrailer = data.results.find(
+      (vid: any) => vid.site === 'YouTube' && vid.type === 'Trailer'
+    );
+    
+    if (youtubeTrailer) {
+      return `https://www.youtube.com/embed/${youtubeTrailer.key}`;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to fetch trailer:', error);
+    return null;
+  }
+};
 
 export default httpClient;

@@ -16,7 +16,7 @@ import { Movie } from '../models/Movie';
 import { btoa, atob } from 'react-native-quick-base64'
 import { useShallow } from 'zustand/shallow';
 
-export default function MovieIndex() {
+const MovieIndex = () => {
   const router = useRouter();
   
   const {
@@ -100,7 +100,10 @@ export default function MovieIndex() {
       </ScrollView>
     </SafeAreaView>
   );
+
 }
+
+export default MovieIndex;
 
 const styles = StyleSheet.create({
   container: {
