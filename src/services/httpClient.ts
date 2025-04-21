@@ -119,7 +119,6 @@ export const searchMovies = async (query: string, page = 1): Promise<MovieRespon
         include_adult: false
       }
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error searching movies:', error);

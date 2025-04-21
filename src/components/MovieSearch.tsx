@@ -5,8 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
-  ScrollView
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSearchStore } from '../stores/searchStore';
@@ -114,7 +113,7 @@ const MovieSearch = ({ onMoviePress }: MovieSearchProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Search Movies</Text>
+        <Text style={styles.headerText}>Movie Dir App</Text>
         <TouchableOpacity style={styles.searchIcon} onPress={toggleSearch}>
           <Ionicons 
             name={showSearch ? "close" : "search"} 
@@ -127,10 +126,7 @@ const MovieSearch = ({ onMoviePress }: MovieSearchProps) => {
       {renderSearchBar()}
       
       {searchQuery ? (
-        <ScrollView 
-          style={styles.scrollContainer}
-          showsVerticalScrollIndicator={true}
-        >
+        <View style={styles.gridContainer}>
           <MovieGrid
             movies={searchResults}
             isLoading={isSearching}
@@ -140,7 +136,7 @@ const MovieSearch = ({ onMoviePress }: MovieSearchProps) => {
             emptyText={`No results found for "${searchQuery}"`}
             error={searchError}
           />
-        </ScrollView>
+        </View>
       ) : null}
     </View>
   );
@@ -154,7 +150,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#032541',
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
   headerText: {
@@ -162,13 +157,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   searchIcon: {
     padding: 8,
   },
-  scrollContainer: {
-    maxHeight: '70%',
+  gridContainer: {
+    maxHeight: '90%',
+    paddingBottom: '20%',
   },
   searchContainer: {
     flexDirection: 'row',
