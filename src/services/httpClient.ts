@@ -35,7 +35,6 @@ const parseEndpoint = (endpoint: string): { path: string; queryParams: Record<st
 
   const [path, queryString] = endpoint.split('?');
   
-
   const queryParams = Object.fromEntries(
     queryString.split('&').map(param => {
       const [key, value] = param.split('=');
@@ -107,6 +106,24 @@ export const fetchTrailer = async (movieId: number | string): Promise<string | n
   } catch (error) {
     console.error('Failed to fetch trailer:', error);
     return null;
+  }
+};
+
+export const searchMovies = async (query: string, page = 1): Promise<MovieResponse> => {
+  try {
+    const response = await httpClient.get('/search/movie', {
+      params: {
+        query,
+        page,
+        language: 'en-US',
+        include_adult: false
+      }
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    throw error;
   }
 };
 

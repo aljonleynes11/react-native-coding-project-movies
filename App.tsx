@@ -5,4 +5,5 @@ const App = require('expo-router/entry').default;
 
 registerRootComponent(App);
 
+
 export default App;

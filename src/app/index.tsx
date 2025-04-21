@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useMovieStore } from '../stores/movieStore';
@@ -15,6 +15,7 @@ import { useMovieIndexStore } from '../stores/movieIndexStore';
 import { Movie } from '../models/Movie';
 import { btoa, atob } from 'react-native-quick-base64'
 import { useShallow } from 'zustand/shallow';
+import MovieSearch from '../components/MovieSearch';
 
 const MovieIndex = () => {
   const router = useRouter();
@@ -67,9 +68,8 @@ const MovieIndex = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#032541" barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.headerText}>All Movies</Text>
-      </View>
+      
+      <MovieSearch onMoviePress={handleMoviePress} />
 
       {error && (
         <View style={styles.errorContainer}>
@@ -100,7 +100,6 @@ const MovieIndex = () => {
       </ScrollView>
     </SafeAreaView>
   );
-
 }
 
 export default MovieIndex;
@@ -109,16 +108,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-  },
-  header: {
-    padding: 16,
-    backgroundColor: '#032541',
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
   },
   scrollContainer: {
     paddingTop: 16,

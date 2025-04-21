@@ -113,6 +113,7 @@ const MovieShow = () => {
             title="Similar Movies"
             endpoint={`/movie/${selectedMovie?.id}/similar`}
             onMoviePress={handleMoviePress}
+            hideNavigation={true}
           />
         </View>
 
@@ -121,6 +122,7 @@ const MovieShow = () => {
             title="Recommended Movies"
             endpoint={`/movie/${selectedMovie?.id}/recommendations`}
             onMoviePress={handleMoviePress}
+            hideNavigation={true}
           />
         </View>
       </ScrollView>

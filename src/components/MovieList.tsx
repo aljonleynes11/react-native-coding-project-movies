@@ -4,24 +4,29 @@ import {
   Text, 
   StyleSheet, 
   FlatList, 
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from 'react-native';
 import { useMovieListStore } from '../stores/movieListStore';
 import { Movie } from '../models/Movie';
 import MovieItem from './MovieItem';
 import { useShallow } from 'zustand/shallow';
+import { useRouter } from 'expo-router';
 
 interface MovieListProps {
   title: string;
   endpoint: string;
   onMoviePress?: (movie: Movie) => void;
+  hideNavigation?: boolean;
 }
 
 const MovieList: React.FC<MovieListProps> = ({ 
   title,
   endpoint,
-  onMoviePress
+  onMoviePress,
+  hideNavigation = false
 }) => {
+  const router = useRouter();
   const defaultMovieList = useMemo(() => ({
     listId: title,
     movies: [],
@@ -41,6 +46,17 @@ const MovieList: React.FC<MovieListProps> = ({
     }
   }, [title, endpoint, fetchMovieList, movies.length, loading]);
 
+  const handleTitlePress = () => {
+    router.push({
+      pathname: '/category',
+      params: {
+        id: encodeURIComponent(title),
+        title: encodeURIComponent(title),
+        endpoint: encodeURIComponent(endpoint)
+      }
+    });
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -57,9 +73,28 @@ const MovieList: React.FC<MovieListProps> = ({
     );
   }
 
+  const renderTitle = () => {
+    if (hideNavigation) {
+      return (
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+      );
+    }
+
+    return (
+      <TouchableOpacity 
+        style={styles.titleContainer}
+        onPress={handleTitlePress}
+      >
+        <Text style={styles.title}>{title}</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {renderTitle()}
       <FlatList
         horizontal
         data={movies}
@@ -81,12 +116,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 0,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    marginLeft: 16,
+    marginRight: 16,
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 12,
-    marginLeft: 16,
     color: '#333',
+    flex: 1,
   },
   loadingContainer: {
     height: 200,

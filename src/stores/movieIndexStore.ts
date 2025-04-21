@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import  { getMoviesByEndpoint } from '../services/httpClient';
+import { getMoviesByEndpoint } from '../services/httpClient';
 import categoriesData from '../mockups/categories.json';
 import { Category } from '../models/Category';
 import { CategoryMovies } from '../models/CategoriesMovie';
@@ -16,14 +16,12 @@ interface MovieIndexState {
   refreshAllMovies: () => Promise<void>;
 }
 
-
 export const useMovieIndexStore = create<MovieIndexState>((set, get) => ({
   categories: [],
   categoryMovies: {},
   isLoading: false,
   error: null,
   
-
   initCategories: () => {
     set({ 
       categories: categoriesData.categories,
@@ -32,7 +30,6 @@ export const useMovieIndexStore = create<MovieIndexState>((set, get) => ({
     });
   },
   
-
   getMoviesForCategory: async (category: Category) => {
     const categoryId = `${category.header}`;
     
@@ -79,7 +76,6 @@ export const useMovieIndexStore = create<MovieIndexState>((set, get) => ({
     }
   },
   
-
   getAllCategories: async () => {
     const { categories } = get();
     set({ isLoading: true, error: null });
@@ -100,7 +96,6 @@ export const useMovieIndexStore = create<MovieIndexState>((set, get) => ({
     }
   },
   
-
   refreshAllMovies: async () => {
     set((state) => ({
       categoryMovies: {},
